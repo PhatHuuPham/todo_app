@@ -1,10 +1,9 @@
 class TaskCategory {
   final int id;
   final String name;
-  final String description;
+  final String? description;
 
-  TaskCategory(
-      {required this.id, required this.name, required this.description});
+  TaskCategory({this.id = 0, required this.name, this.description});
 
   factory TaskCategory.fromJson(Map<String, dynamic> json) {
     return TaskCategory(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
+import 'package:todo_app/viewmodel/task_categoryViewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
 
 class CreateTaskScreen extends StatefulWidget {
@@ -13,13 +14,17 @@ class CreateTaskScreen extends StatefulWidget {
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  String taskCategories = '';
   String priority = 'medium';
   String status = 'pending';
   String dueDate = '';
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TaskViewmodel(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TaskViewmodel()),
+        ChangeNotifierProvider(create: (context) => TaskCategoryViewmodel())
+      ],
       child: Consumer<TaskViewmodel>(
           builder: (context, TaskViewmodel value, child) {
         return Scaffold(
@@ -47,6 +52,31 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Consumer<TaskCategoryViewmodel>(
+                    builder: (context, value, child) {
+                  return DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Category',
+                      border: OutlineInputBorder(),
+                    ),
+                    // value: '',
+                    items: value.taskCategories.isNotEmpty
+                        ? value.taskCategories.map((category) {
+                            return DropdownMenuItem<String>(
+                              value: category.id.toString(),
+                              child: Text(category.name.toUpperCase()),
+                            );
+                          }).toList()
+                        : [],
+                    onChanged: (value) {
+                      // Handle priority change
+                      taskCategories = value!;
+                    },
+                  );
+                }),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
@@ -114,6 +144,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             dueDate.isNotEmpty ? DateTime.parse(dueDate) : null,
                         priority: priority,
                         status: status,
+                        categoryId: int.parse(taskCategories),
                       ),
                     );
                     Navigator.pop(context);
