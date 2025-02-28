@@ -91,7 +91,6 @@ class TaskService extends ChangeNotifier {
       body: jsonEncode({'status': status}),
     );
     if (response.statusCode != 200) {
-      print('lỗi rồi');
       throw Exception('Failed to update task status');
     }
   }

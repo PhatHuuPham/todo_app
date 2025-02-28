@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateTaskScreen()));
+              MaterialPageRoute(builder: (context) => const CreateTaskScreen()));
         },
         child: const Icon(Icons.add),
       ),

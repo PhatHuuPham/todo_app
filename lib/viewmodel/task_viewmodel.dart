@@ -63,7 +63,6 @@ class TaskViewmodel extends ChangeNotifier {
 
   Future<void> updateTaskStatus(int id, String status) async {
     try {
-      print('vô đây chưa');
       await TaskService().updateTaskStatus(id, status);
       fetchTasks();
       notifyListeners();
