@@ -133,9 +133,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Handle task creation
-                    value.createTask(
+                    await value.createTask(
                       Task(
                         id: 0,
                         title: titleController.text,

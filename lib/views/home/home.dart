@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/views/home/calendar_screen.dart';
+import 'package:todo_app/views/home/detail/create_task_category_screen.dart';
 import 'package:todo_app/views/home/detail/create_task_screen.dart';
 import 'package:todo_app/views/home/important_screen.dart';
 import 'package:todo_app/views/home/task_screen.dart';
@@ -28,6 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _onSelected(BuildContext context, String option) {
+    if (option == "task") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CreateTaskScreen()));
+    } else if (option == "task category") {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CreateTaskCategoryScreen()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +56,20 @@ class _HomeScreenState extends State<HomeScreen> {
           UserScreen(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
+      floatingActionButton: PopupMenuButton<String>(
+        onSelected: (value) => _onSelected(context, value),
+        itemBuilder: (context) => [
+          const PopupMenuItem(value: 'task', child: Text('task')),
+          const PopupMenuItem(
+              value: 'task category', child: Text('task category')),
+        ],
+        child: FloatingActionButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          onPressed: null,
+          child: const Icon(Icons.add),
         ),
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const CreateTaskScreen()));
-        },
-        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
