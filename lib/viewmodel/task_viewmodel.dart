@@ -17,7 +17,7 @@ class TaskViewmodel extends ChangeNotifier {
 
   Future<void> fetchTasks() async {
     _isLoading = true;
-    notifyListeners();
+    notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
 
     try {
       _tasks = await TaskService().getTasks();
@@ -25,28 +25,30 @@ class TaskViewmodel extends ChangeNotifier {
       _errorMessage = e.toString();
     } finally {
       _isLoading = false;
-      notifyListeners();
+      notifyListeners(); // Đảm bảo UI cập nhật sau khi dữ liệu thay đổi
     }
   }
 
   Future<void> createTask(Task task) async {
     _isLoading = true;
-    notifyListeners();
+    notifyListeners(); // Thông báo UI rằng đang tải
 
     try {
       await TaskService().createTask(task);
-      _errorMessage = '';
       await fetchTasks(); // Đợi fetchTasks hoàn thành
+      _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task: ${e.toString()}';
-      notifyListeners();
-      throw _errorMessage; // Re-throw to handle in UI
+      throw _errorMessage; // Re-throw để xử lý ở UI nếu cần
+    } finally {
+      _isLoading = false;
+      notifyListeners(); // Thông báo UI rằng đã hoàn thành
     }
   }
 
   Future<void> updateTask(Task task) async {
-    _isLoading = true;
-    notifyListeners();
+    // _isLoading = true;
+    // notifyListeners();
 
     try {
       await TaskService().updateTask(task);
@@ -58,8 +60,8 @@ class TaskViewmodel extends ChangeNotifier {
   }
 
   Future<void> deleteTask(int id) async {
-    _isLoading = true;
-    notifyListeners();
+    // _isLoading = true;
+    // notifyListeners();
 
     try {
       await TaskService().deleteTask(id);

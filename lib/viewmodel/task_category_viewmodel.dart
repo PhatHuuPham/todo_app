@@ -18,35 +18,33 @@ class TaskCategoryViewmodel extends ChangeNotifier {
 
   Future<void> fetchTasksCategory() async {
     _isLoading = true;
-    notifyListeners();
     try {
       _taskCategories = await TaskCategoriesService().getTasks();
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
       _isLoading = false;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> createTaskCategory(TaskCategory taskCategory) async {
     _isLoading = true;
     try {
       await TaskCategoriesService().createTask(taskCategory);
-      _errorMessage = '';
+      await fetchTasksCategory();
+      // notifyListeners();
+      // _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task category: ${e.toString()}';
       throw _errorMessage; // Re-throw to handle in UI
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
   Future<void> updateTaskCategory(TaskCategory taskCategory) async {
     try {
       await TaskCategoriesService().updateTask(taskCategory);
-      fetchTasksCategory();
+      await fetchTasksCategory();
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -55,17 +53,7 @@ class TaskCategoryViewmodel extends ChangeNotifier {
   Future<void> deleteTaskCategory(int id) async {
     try {
       await TaskCategoriesService().deleteTask(id);
-      fetchTasksCategory();
-    } catch (e) {
-      _errorMessage = e.toString();
-    }
-  }
-
-  Future<void> updateTaskStatusCategory(int id, String status) async {
-    try {
-      await TaskCategoriesService().updateTaskStatus(id, status);
-      fetchTasksCategory();
-      notifyListeners();
+      await fetchTasksCategory();
     } catch (e) {
       _errorMessage = e.toString();
     }

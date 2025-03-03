@@ -49,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
             _currentIndex = index;
           });
         },
-        children: const [
-          TaskScreen(),
-          ImportantScreen(),
+        children: [
+          const TaskScreen(),
+          const ImportantScreen(),
           CalendarScreen(),
-          UserScreen(),
+          const UserScreen(),
         ],
       ),
       floatingActionButton: PopupMenuButton<String>(

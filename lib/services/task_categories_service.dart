@@ -69,18 +69,4 @@ class TaskCategoriesService extends ChangeNotifier {
       throw Exception('Failed to delete task');
     }
   }
-
-  Future<void> updateTaskStatus(int id, String status) async {
-    // Fetch data from API
-    final response = await http.put(
-      Uri.parse('$baseUrl/task_categories/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({'status': status}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update task status');
-    }
-  }
 }
