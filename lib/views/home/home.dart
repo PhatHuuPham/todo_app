@@ -31,11 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onSelected(BuildContext context, String option) {
     if (option == "task") {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CreateTaskScreen()));
-    } else if (option == "task category") {
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => CreateTaskCategoryScreen()));
+          MaterialPageRoute(builder: (context) => const CreateTaskScreen()));
+    } else if (option == "task category") {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const CreateTaskCategoryScreen()));
     }
   }
 
@@ -49,28 +51,30 @@ class _HomeScreenState extends State<HomeScreen> {
             _currentIndex = index;
           });
         },
-        children: [
-          const TaskScreen(),
-          const ImportantScreen(),
+        children: const [
+          TaskScreen(),
+          ImportantScreen(),
           CalendarScreen(),
-          const UserScreen(),
+          UserScreen(),
         ],
       ),
-      floatingActionButton: PopupMenuButton<String>(
-        onSelected: (value) => _onSelected(context, value),
-        itemBuilder: (context) => [
-          const PopupMenuItem(value: 'task', child: Text('task')),
-          const PopupMenuItem(
-              value: 'task category', child: Text('task category')),
-        ],
-        child: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-          onPressed: null,
-          child: const Icon(Icons.add),
-        ),
-      ),
+      floatingActionButton: _currentIndex == 3
+          ? null // Không hiển thị FAB khi ở UserScreen
+          : PopupMenuButton<String>(
+              onSelected: (value) => _onSelected(context, value),
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'task', child: Text('task')),
+                const PopupMenuItem(
+                    value: 'task category', child: Text('task category')),
+              ],
+              child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                onPressed: null,
+                child: const Icon(Icons.add),
+              ),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {

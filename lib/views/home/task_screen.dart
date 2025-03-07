@@ -5,26 +5,27 @@ import 'package:todo_app/viewmodel/task_viewmodel.dart';
 import 'package:todo_app/views/home/detail/task_detail_screen.dart';
 import 'package:todo_app/views/share/task_category_bottom_sheet.dart';
 
-class TaskScreen extends StatelessWidget {
+class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    bool isSameDate(DateTime? date1, DateTime? date2) {
-      if (date1 == null || date2 == null) {
-        return false;
-      }
-      DateTime localDate1 = date1.toLocal();
-      DateTime localDate2 = date2.toLocal();
-      return localDate1.year == localDate2.year &&
-          localDate1.month == localDate2.month &&
-          localDate1.day == localDate2.day;
-    }
+  _TaskScreenState createState() => _TaskScreenState();
+}
 
+class _TaskScreenState extends State<TaskScreen> {
+  double containerCategorySize = 100;
+
+  bool isSameDate(DateTime? date1, DateTime? date2) {
+    if (date1 == null || date2 == null) return false;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tasks'),
-      ),
+      appBar: AppBar(title: const Text('Tasks')),
       body: Column(
         children: [
           const Center(
@@ -34,75 +35,97 @@ class TaskScreen extends StatelessWidget {
             ),
           ),
           Consumer<TaskViewmodel>(builder: (context, value, child) {
+            final todayTasks = value.tasks
+                .where((task) => isSameDate(task.dueDate, DateTime.now()))
+                .toList();
+
             return Expanded(
               child: ListView.builder(
-                itemCount: value.tasks.length,
+                itemCount: todayTasks.length,
                 itemBuilder: (context, index) {
-                  final task = value.tasks[index];
-                  final today = DateTime.now();
-                  if (isSameDate(task.dueDate, today)) {
-                    return ListTile(
-                      title: Text(task.title,
-                          style: TextStyle(
-                            decoration: task.status == 'completed'
-                                ? TextDecoration.lineThrough
-                                : null,
-                            decorationThickness: 2,
-                          )),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskDetailScreen(task: task),
-                          ),
-                        );
+                  final task = todayTasks[index];
+                  return ListTile(
+                    title: Text(
+                      task.title,
+                      style: TextStyle(
+                        decoration: task.status == 'completed'
+                            ? TextDecoration.lineThrough
+                            : null,
+                        decorationThickness: 2,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskDetailScreen(task: task),
+                        ),
+                      );
+                    },
+                    trailing: Checkbox(
+                      value: task.status == 'completed',
+                      onChanged: (bool? newValue) {
+                        value.updateTaskStatus(task.id,
+                            newValue == true ? 'completed' : 'in_progress');
                       },
-                      trailing: Checkbox(
-                          value: task.status == 'completed',
-                          onChanged: (bool? newValue) {
-                            if (newValue == true) {
-                              value.updateTaskStatus(task.id, 'completed');
-                            } else {
-                              value.updateTaskStatus(task.id, 'in_progress');
-                            }
-                          }),
-                    );
-                  }
-                  return Container();
+                    ),
+                  );
                 },
               ),
             );
           }),
-          const Center(
-            child: Text(
-              'Task categories',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Task categories',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      containerCategorySize =
+                          (containerCategorySize == 100) ? 300 : 100;
+                    });
+                  },
+                  icon: Icon(
+                    containerCategorySize == 100
+                        ? Icons.expand_less
+                        : Icons.expand_more,
+                  ),
+                ),
+              ],
             ),
           ),
           Consumer<TaskCategoryViewmodel>(builder: (context, value, child) {
-            return Expanded(
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              width: double.infinity,
+              height: containerCategorySize,
               child: ListView.builder(
-                  itemCount: value.taskCategories.length,
-                  itemBuilder: (context, index) {
-                    final taskCategory = value.taskCategories[index];
-                    return ListTile(
-                      title: Text(taskCategory.name),
-                      onTap: () {
-                        showModalBottomSheet(
-                            context: context,
-                            isScrollControlled:
-                                true, // Quan trọng: Cho phép sheet mở rộng toàn màn hình
-                            backgroundColor: Colors
-                                .transparent, // Để không có viền trắng xung quanh
-                            builder: (context) {
-                              return TaskCategoryBottomSheet(
-                                  taskCategory: taskCategory);
-                            });
-                      },
-                    );
-                  }),
+                itemCount: value.taskCategories.length,
+                itemBuilder: (context, index) {
+                  final taskCategory = value.taskCategories[index];
+                  return ListTile(
+                    title: Text(taskCategory.name),
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) {
+                          return TaskCategoryBottomSheet(
+                              taskCategory: taskCategory);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             );
-          })
+          }),
         ],
       ),
     );

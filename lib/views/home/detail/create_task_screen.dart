@@ -26,6 +26,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Create Task'),
+          actions: [],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
