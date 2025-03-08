@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:todo_app/models/user.dart';
 
 class UserService extends ChangeNotifier {
-  static const String baseUrl = "http://192.168.1.9:3000";
+  static const String baseUrl = "http://localhost:3000";
 
   Future<List<User>> getUsers() async {
     // Fetch data from API
-    final response = await http.get(Uri.parse('$baseUrl/user'));
+    final response = await http.get(Uri.parse('$baseUrl/users'));
     if (response.statusCode == 200) {
       final List<dynamic> userJson = json.decode(response.body);
       return userJson.map((json) => User.fromJson(json)).toList();

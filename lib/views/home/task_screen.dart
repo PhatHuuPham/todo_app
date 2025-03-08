@@ -25,7 +25,8 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tasks')),
+      appBar:
+          AppBar(title: const Text('Tasks'), automaticallyImplyLeading: false),
       body: Column(
         children: [
           const Center(

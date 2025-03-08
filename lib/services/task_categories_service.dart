@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:todo_app/models/task_category.dart';
 
 class TaskCategoriesService extends ChangeNotifier {
-  static const String baseUrl = "http://192.168.1.9:3000";
+  static const String baseUrl = "http://localhost:3000";
 
   Future<List<TaskCategory>> getTasks() async {
     // Fetch data from API

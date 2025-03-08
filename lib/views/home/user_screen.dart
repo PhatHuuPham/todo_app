@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app/views/auth/login_screen.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -131,7 +133,7 @@ class _UserScreenState extends State<UserScreen> {
                               BorderRadius.circular(20), // Bo tròn góc
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {},
                       child: const Text(
                         "Cài đặt", // Ví dụ chữ dài
                         textAlign: TextAlign.center, // Căn giữa văn bản
@@ -151,7 +153,12 @@ class _UserScreenState extends State<UserScreen> {
                               BorderRadius.circular(20), // Bo tròn góc
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()));
+                      },
                       child: const Text(
                         "Đăng nhập", // Ví dụ chữ dài
                         textAlign: TextAlign.center, // Căn giữa văn bản
