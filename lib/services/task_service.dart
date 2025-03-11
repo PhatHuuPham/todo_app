@@ -17,6 +17,17 @@ class TaskService extends ChangeNotifier {
     }
   }
 
+  Future<List<Task>> getTasksByUserId(int userId) async {
+    // Fetch data from API
+    final response = await http.get(Uri.parse('$baseUrl/tasks/user/$userId'));
+    if (response.statusCode == 200) {
+      final List<dynamic> taskJson = json.decode(response.body);
+      return taskJson.map((json) => Task.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load tasks');
+    }
+  }
+
   Future<Task> getTask(int id) async {
     // Fetch data from API
     final response = await http.get(Uri.parse('$baseUrl/tasks/$id'));

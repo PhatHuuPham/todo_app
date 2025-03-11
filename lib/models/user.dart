@@ -1,8 +1,8 @@
 class User {
   final int? id;
-  final String username;
-  final String email;
-  final String password;
+  final String? username;
+  final String? email;
+  final String? password;
   final String? avatarUrl;
   final DateTime? createdAt;
 
@@ -14,18 +14,6 @@ class User {
     this.avatarUrl,
     this.createdAt,
   });
-
-  // Convert User instance to Map
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'username': username,
-      'email': email,
-      'password': password,
-      'avatar_url': avatarUrl,
-      'created_at': createdAt?.toIso8601String(),
-    };
-  }
 
   // Create User instance from Map
   factory User.fromJson(Map<String, dynamic> json) {

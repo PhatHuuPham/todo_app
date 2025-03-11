@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/views/auth/login_screen.dart';
 
 class UserScreen extends StatefulWidget {
@@ -57,7 +56,7 @@ class _UserScreenState extends State<UserScreen> {
             ),
           ),
           const SizedBox(height: 20), // Khoảng cách giữa 2 hàng
-          Center(
+          const Center(
             child: Text('Quản lý',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),

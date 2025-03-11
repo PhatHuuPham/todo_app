@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/services/data/share_prefrence.dart';
-import 'package:todo_app/viewmodel/user_viewmodel.dart';
+import 'package:todo_app/viewmodel/auth_viewmodel.dart';
 import 'package:todo_app/views/home/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,7 +14,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -26,41 +24,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-      try {
-        // Here you would typically call your authentication logic
-        // For now, we'll just print the values
+      final success = await authViewModel.login(
+        _usernameController.text,
+        _passwordController.text,
+      );
 
-        final userViewModel =
-            Provider.of<UserViewmodel>(context, listen: false);
-        await userViewModel.fetchUsers();
-        final users = userViewModel.tasks;
-
-        // Check if user exists
-        final user = users.firstWhere(
-          (user) => user.username == _usernameController.text,
-          orElse: () => throw Exception('User not found'),
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
-
-        // Verify password (Note: In real app, use proper password hashing)
-        if (user.password != _passwordController.text) {
-          throw Exception('Invalid password');
-        }
-
-        final sharePreference =
-            Provider.of<Shareprefrence>(context, listen: false);
-        await sharePreference.setUser(user.id ?? 0, user.username, user.email);
-
-        // Add your authentication logic here
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
-      } catch (e) {
+      } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${e.toString()}')),
+          SnackBar(content: Text(authViewModel.errorMessage)),
         );
-      } finally {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -115,15 +94,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Login'),
-                  ),
+                Consumer<AuthViewModel>(
+                  builder: (context, authViewModel, child) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed:
+                            authViewModel.isLoading ? null : _handleLogin,
+                        child: authViewModel.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Login'),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextButton(
