@@ -29,7 +29,7 @@ class UserService extends ChangeNotifier {
 
   Future<User> createUser(User user) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/user'),
+      Uri.parse('$baseUrl/users'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -51,7 +51,7 @@ class UserService extends ChangeNotifier {
   Future<User> updateUser(User user) async {
     // Fetch data from API
     final response = await http.put(
-      Uri.parse('$baseUrl/user/${user.id}'),
+      Uri.parse('$baseUrl/users/${user.id}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -69,7 +69,7 @@ class UserService extends ChangeNotifier {
 
   Future<void> deleteUser(int id) async {
     // Fetch data from API
-    final response = await http.delete(Uri.parse('$baseUrl/user/$id'));
+    final response = await http.delete(Uri.parse('$baseUrl/users/$id'));
     if (response.statusCode != 204) {
       throw Exception('Failed to delete User');
     }

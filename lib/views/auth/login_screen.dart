@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/viewmodel/auth_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
+import 'package:todo_app/views/auth/create_account_screen.dart';
 import 'package:todo_app/views/home/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,9 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (success && mounted) {
-        final prefs = await SharedPreferences.getInstance();
-        Provider.of<TaskViewmodel>(context, listen: false)
-            .fetchTasksByUserId(prefs.getInt('userId') ?? 0);
+        Provider.of<TaskViewmodel>(context, listen: false).fetchTasksByUserId();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -117,9 +115,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    // Add navigation to registration screen
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CreateAccountScreen()),
+                    );
                   },
                   child: const Text('Don\'t have an account? Register'),
+                ),
+                const SizedBox(height: 16), // Add some space between buttons
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()),
+                    );
+                  },
+                  child: const Text('Continue as Guest'),
                 ),
               ],
             ),

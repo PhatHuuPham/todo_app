@@ -5,7 +5,7 @@ import 'package:todo_app/services/user_service.dart';
 
 class UserViewmodel extends ChangeNotifier {
   UserViewmodel() {
-    fetchUsers();
+    // fetchUsers();
   }
 
   List<User> _users = [];
@@ -16,19 +16,19 @@ class UserViewmodel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchUsers() async {
-    _isLoading = true;
-    notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
+  // Future<void> fetchUsers() async {
+  //   _isLoading = true;
+  //   notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
 
-    try {
-      _users = await UserService().getUsers();
-    } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners(); // Đảm bảo UI cập nhật sau khi dữ liệu thay đổi
-    }
-  }
+  //   try {
+  //     _users = await UserService().getUsers();
+  //   } catch (e) {
+  //     _errorMessage = e.toString();
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners(); // Đảm bảo UI cập nhật sau khi dữ liệu thay đổi
+  //   }
+  // }
 
   Future<void> createUser(User user) async {
     _isLoading = true;
@@ -36,7 +36,6 @@ class UserViewmodel extends ChangeNotifier {
 
     try {
       await UserService().createUser(user);
-      await fetchUsers(); // Đợi fetchTasks hoàn thành
       _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task: ${e.toString()}';
@@ -53,7 +52,7 @@ class UserViewmodel extends ChangeNotifier {
 
     try {
       await UserService().updateUser(user);
-      await fetchUsers(); // Đợi fetchTasks hoàn thành
+      // await fetchUsers(); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -66,7 +65,7 @@ class UserViewmodel extends ChangeNotifier {
 
     try {
       await TaskService().deleteTask(id);
-      await fetchUsers(); // Đợi fetchTasks hoàn thành
+      // await fetchUsers(); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/services/task_service.dart';
 import '../models/task.dart';
 
 class TaskViewmodel extends ChangeNotifier {
-  final int userId; // Nhận userId từ constructor
-  TaskViewmodel({required this.userId}) {
-    fetchTasksByUserId(userId);
+  // final int userId; // Nhận userId từ constructor
+  TaskViewmodel() {
+    fetchTasksByUserId();
   }
 
   List<Task> _tasks = [];
@@ -30,12 +31,14 @@ class TaskViewmodel extends ChangeNotifier {
   //   }
   // }
 
-  Future<void> fetchTasksByUserId(int userId) async {
+  Future<void> fetchTasksByUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     _isLoading = true;
     notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
 
     try {
-      _tasks = await TaskService().getTasksByUserId(userId);
+      _tasks =
+          await TaskService().getTasksByUserId(prefs.getInt('userId') ?? 0);
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -54,8 +57,7 @@ class TaskViewmodel extends ChangeNotifier {
     notifyListeners(); // Thông báo UI rằng đang tải
     try {
       await TaskService().createTask(task);
-      await fetchTasksByUserId(
-          userId); // Use current userId if task.userId is null
+      await fetchTasksByUserId(); // Use current userId if task.userId is null
       _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task: ${e.toString()}';
@@ -72,7 +74,7 @@ class TaskViewmodel extends ChangeNotifier {
 
     try {
       await TaskService().updateTask(task);
-      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -85,7 +87,7 @@ class TaskViewmodel extends ChangeNotifier {
 
     try {
       await TaskService().deleteTask(id);
-      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -95,7 +97,7 @@ class TaskViewmodel extends ChangeNotifier {
   Future<void> updateTaskStatus(int id, String status) async {
     try {
       await TaskService().updateTaskStatus(id, status);
-      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
