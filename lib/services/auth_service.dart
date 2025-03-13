@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/models/user.dart';
 
 class AuthService extends ChangeNotifier {
@@ -11,13 +12,13 @@ class AuthService extends ChangeNotifier {
   String? get accessToken => _accessToken;
   User? get currentUser => _currentUser;
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String userInput, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'email': email,
+          'userInput': userInput,
           'password': password,
         }),
       );
@@ -35,9 +36,15 @@ class AuthService extends ChangeNotifier {
         }
 
         _accessToken = accessToken;
-        print(accessToken);
         _currentUser = User.fromJson(userData);
         notifyListeners();
+
+        // ✅ Lưu vào SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('accessToken', accessToken!);
+        await prefs.setString('user', jsonEncode(userData));
+        await prefs.setInt('userId', userData['id']);
+
         return data;
       } else {
         final error = json.decode(response.body);

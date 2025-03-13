@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app/services/data/share_prefrence.dart';
+import 'package:todo_app/viewmodel/auth_viewmodel.dart';
 import 'package:todo_app/views/auth/login_screen.dart';
+import 'package:todo_app/views/home/home.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -9,52 +14,88 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
+  bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final sharePref = Provider.of<Shareprefrence>(context, listen: false);
+    bool status = await sharePref.checkLoginStatus();
+    setState(() {
+      isLoggedIn = status;
+    });
+  }
+
+  void _handleLogout() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    await authViewModel.logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.remove('user');
+    await prefs.remove('userId');
+    setState(() {
+      isLoggedIn = false;
+    });
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            width: 1000,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30), // Bo góc dưới bên trái
-                bottomRight: Radius.circular(30), // Bo góc dưới bên phải
-              ),
-            ),
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              // alignment: WrapAlignment.center, // Căn giữa theo chiều ngang
-              // runAlignment: WrapAlignment.center,
-
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/user.jpg',
-                    width: 100,
-                    height: 100,
-                  ),
-                ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Name project',
-                      style: TextStyle(fontSize: 18),
+          isLoggedIn
+              ? Container(
+                  padding: const EdgeInsets.all(20),
+                  width: 1000,
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30), // Bo góc dưới bên trái
+                      bottomRight: Radius.circular(30), // Bo góc dưới bên phải
                     ),
-                    Text(
-                      'Email',
-                      style: TextStyle(fontSize: 15),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
+                  ),
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    // alignment: WrapAlignment.center, // Căn giữa theo chiều ngang
+                    // runAlignment: WrapAlignment.center,
+
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Image.asset(
+                          'assets/images/user.jpg',
+                          width: 100,
+                          height: 100,
+                        ),
+                      ),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Name project',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          Text(
+                            'Email',
+                            style: TextStyle(fontSize: 15),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              : Container(),
           const SizedBox(height: 20), // Khoảng cách giữa 2 hàng
           const Center(
             child: Text('Quản lý',
@@ -143,31 +184,57 @@ class _UserScreenState extends State<UserScreen> {
                             fontSize: 16), // Tùy chỉnh kích thước chữ nếu cần
                       ),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(
-                            130, 70), // Chiều rộng và chiều cao cố định
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(20), // Bo tròn góc
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
-                      },
-                      child: const Text(
-                        "Đăng nhập", // Ví dụ chữ dài
-                        textAlign: TextAlign.center, // Căn giữa văn bản
-                        softWrap: true, // Cho phép xuống dòng
-                        overflow:
-                            TextOverflow.visible, // Đảm bảo chữ không bị cắt
-                        style: TextStyle(
-                            fontSize: 16), // Tùy chỉnh kích thước chữ nếu cần
-                      ),
-                    ),
+                    isLoggedIn
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(
+                                  130, 70), // Chiều rộng và chiều cao cố định
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(20), // Bo tròn góc
+                              ),
+                            ),
+                            onPressed: () {
+                              _handleLogout();
+                            },
+                            child: const Text(
+                              "Đăng xuất", // Ví dụ chữ dài
+                              textAlign: TextAlign.center, // Căn giữa văn bản
+                              softWrap: true, // Cho phép xuống dòng
+                              overflow: TextOverflow
+                                  .visible, // Đảm bảo chữ không bị cắt
+                              style: TextStyle(
+                                  fontSize:
+                                      16), // Tùy chỉnh kích thước chữ nếu cần
+                            ),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(
+                                  130, 70), // Chiều rộng và chiều cao cố định
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(20), // Bo tròn góc
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            },
+                            child: const Text(
+                              "Đăng nhập", // Ví dụ chữ dài
+                              textAlign: TextAlign.center, // Căn giữa văn bản
+                              softWrap: true, // Cho phép xuống dòng
+                              overflow: TextOverflow
+                                  .visible, // Đảm bảo chữ không bị cắt
+                              style: TextStyle(
+                                  fontSize:
+                                      16), // Tùy chỉnh kích thước chữ nếu cần
+                            ),
+                          ),
                   ],
                 ),
               ],

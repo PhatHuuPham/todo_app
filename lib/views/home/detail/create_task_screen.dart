@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/viewmodel/task_category_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
@@ -147,6 +148,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+
                   DateTime? finalDateTime;
                   if (dueDate.isNotEmpty) {
                     final date = DateTime.parse(dueDate);
@@ -168,6 +171,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       id: 0,
                       title: titleController.text,
                       description: descriptionController.text,
+                      userId: prefs.getInt('userId'),
                       dueDate: finalDateTime,
                       priority: priority,
                       status: status,

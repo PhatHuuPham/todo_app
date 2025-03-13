@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app/services/data/share_prefrence.dart';
 import 'package:todo_app/viewmodel/auth_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_category_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
@@ -7,13 +9,19 @@ import 'package:todo_app/viewmodel/user_viewmodel.dart';
 import 'package:todo_app/views/home/home.dart';
 // import 'package:todo_app/routes/app_router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Đảm bảo Flutter đã khởi tạo trước khi gọi SharedPreferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int? userId = prefs.getInt('userId'); // Lấy userId từ SharedPreferences
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => TaskViewmodel()),
+      ChangeNotifierProvider(
+          create: (context) => TaskViewmodel(userId: userId ?? 0)),
       ChangeNotifierProvider(create: (context) => TaskCategoryViewmodel()),
       ChangeNotifierProvider(create: (context) => UserViewmodel()),
       ChangeNotifierProvider(create: (context) => AuthViewModel()),
+      ChangeNotifierProvider(create: (context) => Shareprefrence()),
     ],
     child: const MyApp(),
   ));

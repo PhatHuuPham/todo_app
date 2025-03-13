@@ -3,8 +3,9 @@ import 'package:todo_app/services/task_service.dart';
 import '../models/task.dart';
 
 class TaskViewmodel extends ChangeNotifier {
-  TaskViewmodel() {
-    fetchTasks();
+  final int userId; // Nhận userId từ constructor
+  TaskViewmodel({required this.userId}) {
+    fetchTasksByUserId(userId);
   }
 
   List<Task> _tasks = [];
@@ -15,12 +16,26 @@ class TaskViewmodel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchTasks() async {
+  // Future<void> fetchTasks() async {
+  //   _isLoading = true;
+  //   notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
+
+  //   try {
+  //     _tasks = await TaskService().getTasks();
+  //   } catch (e) {
+  //     _errorMessage = e.toString();
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners(); // Đảm bảo UI cập nhật sau khi dữ liệu thay đổi
+  //   }
+  // }
+
+  Future<void> fetchTasksByUserId(int userId) async {
     _isLoading = true;
     notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
 
     try {
-      _tasks = await TaskService().getTasks();
+      _tasks = await TaskService().getTasksByUserId(userId);
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -32,10 +47,10 @@ class TaskViewmodel extends ChangeNotifier {
   Future<void> createTask(Task task) async {
     _isLoading = true;
     notifyListeners(); // Thông báo UI rằng đang tải
-
     try {
       await TaskService().createTask(task);
-      await fetchTasks(); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(
+          userId); // Use current userId if task.userId is null
       _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task: ${e.toString()}';
@@ -52,7 +67,7 @@ class TaskViewmodel extends ChangeNotifier {
 
     try {
       await TaskService().updateTask(task);
-      await fetchTasks(); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -65,7 +80,7 @@ class TaskViewmodel extends ChangeNotifier {
 
     try {
       await TaskService().deleteTask(id);
-      await fetchTasks(); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -75,7 +90,7 @@ class TaskViewmodel extends ChangeNotifier {
   Future<void> updateTaskStatus(int id, String status) async {
     try {
       await TaskService().updateTaskStatus(id, status);
-      await fetchTasks(); // Đợi fetchTasks hoàn thành
+      await fetchTasksByUserId(userId); // Đợi fetchTasks hoàn thành
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();

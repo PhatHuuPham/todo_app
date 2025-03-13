@@ -29,6 +29,8 @@ class User {
     );
   }
 
+  get name => null;
+
   // Create copy of User with modified fields
   User copyWith({
     int? id,
