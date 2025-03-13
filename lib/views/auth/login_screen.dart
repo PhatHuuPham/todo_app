@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/viewmodel/auth_viewmodel.dart';
+import 'package:todo_app/viewmodel/task_viewmodel.dart';
 import 'package:todo_app/views/home/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (success && mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        Provider.of<TaskViewmodel>(context, listen: false)
+            .fetchTasksByUserId(prefs.getInt('userId') ?? 0);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),

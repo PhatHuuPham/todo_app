@@ -44,6 +44,11 @@ class TaskViewmodel extends ChangeNotifier {
     }
   }
 
+  void clearTasks() {
+    _tasks = []; // Reset danh sách task
+    notifyListeners();
+  }
+
   Future<void> createTask(Task task) async {
     _isLoading = true;
     notifyListeners(); // Thông báo UI rằng đang tải

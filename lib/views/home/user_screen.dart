@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/services/data/share_prefrence.dart';
 import 'package:todo_app/viewmodel/auth_viewmodel.dart';
+import 'package:todo_app/viewmodel/task_viewmodel.dart';
 import 'package:todo_app/views/auth/login_screen.dart';
 import 'package:todo_app/views/home/home.dart';
 
@@ -15,6 +16,8 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   bool isLoggedIn = false;
+  String? email = '';
+  String? userName = '';
 
   @override
   void initState() {
@@ -25,12 +28,18 @@ class _UserScreenState extends State<UserScreen> {
   Future<void> _checkLoginStatus() async {
     final sharePref = Provider.of<Shareprefrence>(context, listen: false);
     bool status = await sharePref.checkLoginStatus();
+    final prefs = await SharedPreferences.getInstance();
+
     setState(() {
       isLoggedIn = status;
+      email = prefs.getString('email');
+      userName = prefs.getString('userName');
     });
   }
 
   void _handleLogout() async {
+    // ✅ Reset dữ liệu liên quan đến Task sau khi đăng xuất
+    Provider.of<TaskViewmodel>(context, listen: false).clearTasks();
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     await authViewModel.logout();
     final prefs = await SharedPreferences.getInstance();
@@ -47,6 +56,8 @@ class _UserScreenState extends State<UserScreen> {
       ),
     );
   }
+
+  void showEmailUsername() {}
 
   @override
   Widget build(BuildContext context) {
@@ -79,16 +90,16 @@ class _UserScreenState extends State<UserScreen> {
                           height: 100,
                         ),
                       ),
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Name project',
-                            style: TextStyle(fontSize: 18),
+                            userName ?? '',
+                            style: const TextStyle(fontSize: 18),
                           ),
                           Text(
-                            'Email',
-                            style: TextStyle(fontSize: 15),
+                            email ?? '',
+                            style: const TextStyle(fontSize: 15),
                           )
                         ],
                       ),

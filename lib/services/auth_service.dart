@@ -44,7 +44,8 @@ class AuthService extends ChangeNotifier {
         await prefs.setString('accessToken', accessToken!);
         await prefs.setString('user', jsonEncode(userData));
         await prefs.setInt('userId', userData['id']);
-
+        await prefs.setString('email', userData['email']);
+        await prefs.setString('userName', userData['username']);
         return data;
       } else {
         final error = json.decode(response.body);
