@@ -17,19 +17,14 @@ class TaskViewmodel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  // Future<void> fetchTasks() async {
-  //   _isLoading = true;
-  //   notifyListeners(); // Thông báo UI rằng đang tải dữ liệu
+  bool isSameDate(DateTime? date1, DateTime? date2) {
+    if (date1 == null || date2 == null) return false;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
 
-  //   try {
-  //     _tasks = await TaskService().getTasks();
-  //   } catch (e) {
-  //     _errorMessage = e.toString();
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners(); // Đảm bảo UI cập nhật sau khi dữ liệu thay đổi
-  //   }
-  // }
+  // API CRUD
 
   Future<void> fetchTasksByUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

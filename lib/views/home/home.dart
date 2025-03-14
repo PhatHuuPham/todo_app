@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/views/home/calendar_screen.dart';
 import 'package:todo_app/views/home/detail/create_task_category_screen.dart';
 import 'package:todo_app/views/home/detail/create_task_screen.dart';
-import 'package:todo_app/views/home/important_screen.dart';
+import 'package:todo_app/views/home/detail/task_statistics_screen.dart';
 import 'package:todo_app/views/home/task_screen.dart';
 import 'package:todo_app/views/home/user_screen.dart';
 
@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: const [
           TaskScreen(),
-          ImportantScreen(),
+          TaskStatisticsScreen(),
           CalendarScreen(),
           UserScreen(),
         ],
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: 'Task'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.star_outline), label: 'Important'),
+              icon: Icon(Icons.bar_chart), label: 'Statistical'),
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today), label: 'Calendar'),
           BottomNavigationBarItem(

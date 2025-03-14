@@ -3,9 +3,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/services/task_categories_service.dart';
 import '../models/task_category.dart';
 
-class TaskCategoryViewmodel extends ChangeNotifier {
+class TaskCategoryViewmodel extends ChangeNotifier with WidgetsBindingObserver {
   TaskCategoryViewmodel() {
     fetchTasksByUserId();
+  }
+  // Khi app được active lại, gọi refresh dữ liệu
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      fetchTasksByUserId();
+    }
   }
 
   List<TaskCategory> _taskCategories = [];
@@ -16,17 +23,23 @@ class TaskCategoryViewmodel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchTasksCategory() async {
-    _isLoading = true;
-    try {
-      _taskCategories = await TaskCategoriesService().getTasks();
-    } catch (e) {
-      _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
+
+  // Future<void> fetchTasksCategory() async {
+  //   _isLoading = true;
+  //   try {
+  //     _taskCategories = await TaskCategoriesService().getTasks();
+  //   } catch (e) {
+  //     _errorMessage = e.toString();
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
 
   Future<void> fetchTasksByUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,7 +49,6 @@ class TaskCategoryViewmodel extends ChangeNotifier {
     try {
       _taskCategories = await TaskCategoriesService()
           .getTasksByUserId(prefs.getInt('userId') ?? 0);
-      print(prefs.getInt('userId') ?? 0);
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -55,7 +67,7 @@ class TaskCategoryViewmodel extends ChangeNotifier {
     try {
       await TaskCategoriesService().createTask(taskCategory);
       await fetchTasksByUserId();
-      // notifyListeners();
+      notifyListeners();
       // _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to create task category: ${e.toString()}';

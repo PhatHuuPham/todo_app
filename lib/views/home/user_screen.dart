@@ -6,6 +6,9 @@ import 'package:todo_app/viewmodel/auth_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_category_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
 import 'package:todo_app/views/auth/login_screen.dart';
+import 'package:todo_app/views/home/detail/completed_tasks_screen.dart';
+import 'package:todo_app/views/home/detail/setting_screen.dart';
+import 'package:todo_app/views/home/detail/task_statistics_screen.dart';
 import 'package:todo_app/views/home/home.dart';
 
 class UserScreen extends StatefulWidget {
@@ -58,8 +61,6 @@ class _UserScreenState extends State<UserScreen> {
       ),
     );
   }
-
-  void showEmailUsername() {}
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +138,13 @@ class _UserScreenState extends State<UserScreen> {
                               BorderRadius.circular(20), // Bo tròn góc
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const TaskStatisticsScreen()));
+                      },
                       child: const Text(
                         "Thống kê", // Ví dụ chữ dài
                         textAlign: TextAlign.center, // Căn giữa văn bản
@@ -157,7 +164,13 @@ class _UserScreenState extends State<UserScreen> {
                               BorderRadius.circular(20), // Bo tròn góc
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const CompletedTasksScreen()));
+                      },
                       child: const Text(
                         "Task hoàn thành", // Ví dụ chữ dài
                         textAlign: TextAlign.center, // Căn giữa văn bản
@@ -186,7 +199,12 @@ class _UserScreenState extends State<UserScreen> {
                               BorderRadius.circular(20), // Bo tròn góc
                         ),
                       ),
-                      onPressed: () async {},
+                      onPressed: () async {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SettingScreen()));
+                      },
                       child: const Text(
                         "Cài đặt", // Ví dụ chữ dài
                         textAlign: TextAlign.center, // Căn giữa văn bản

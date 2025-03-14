@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:todo_app/views/not_found_screen.dart';
 import 'package:todo_app/views/home/calendar_screen.dart';
 import 'package:todo_app/views/home/detail/create_task_screen.dart';
-import 'package:todo_app/views/home/important_screen.dart';
+import 'package:todo_app/views/home/share_screen.dart';
 import 'package:todo_app/views/home/task_screen.dart';
 import 'package:todo_app/views/home/user_screen.dart';
 
@@ -24,7 +24,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: '/important',
-          builder: (context, state) => const ImportantScreen(),
+          builder: (context, state) => const ShareScreen(),
         ),
         GoRoute(
           path: '/calendar',

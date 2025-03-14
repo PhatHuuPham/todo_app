@@ -15,40 +15,6 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
   double containerCategorySize = 100;
 
-  bool isSameDate(DateTime? date1, DateTime? date2) {
-    if (date1 == null || date2 == null) return false;
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Đăng ký observer để theo dõi trạng thái app
-    WidgetsBinding.instance.addObserver(this);
-    // Gọi fetch khi màn hình được khởi tạo
-    Future.microtask(() {
-      Provider.of<TaskCategoryViewmodel>(context, listen: false)
-          .fetchTasksByUserId();
-    });
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  // Khi app được active lại, gọi refresh dữ liệu
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      Provider.of<TaskCategoryViewmodel>(context, listen: false)
-          .fetchTasksByUserId();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +30,7 @@ class _TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
           ),
           Consumer<TaskViewmodel>(builder: (context, value, child) {
             final todayTasks = value.tasks
-                .where((task) => isSameDate(task.dueDate, DateTime.now()))
+                .where((task) => value.isSameDate(task.dueDate, DateTime.now()))
                 .toList();
 
             return Expanded(
