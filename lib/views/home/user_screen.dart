@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/services/data/share_prefrence.dart';
 import 'package:todo_app/viewmodel/auth_viewmodel.dart';
+import 'package:todo_app/viewmodel/task_category_viewmodel.dart';
 import 'package:todo_app/viewmodel/task_viewmodel.dart';
 import 'package:todo_app/views/auth/login_screen.dart';
 import 'package:todo_app/views/home/home.dart';
@@ -40,6 +41,7 @@ class _UserScreenState extends State<UserScreen> {
   void _handleLogout() async {
     // ✅ Reset dữ liệu liên quan đến Task sau khi đăng xuất
     Provider.of<TaskViewmodel>(context, listen: false).clearTasks();
+    Provider.of<TaskCategoryViewmodel>(context, listen: false).clearTasks();
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     await authViewModel.logout();
     final prefs = await SharedPreferences.getInstance();

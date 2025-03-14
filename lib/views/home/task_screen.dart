@@ -12,7 +12,7 @@ class TaskScreen extends StatefulWidget {
   _TaskScreenState createState() => _TaskScreenState();
 }
 
-class _TaskScreenState extends State<TaskScreen> {
+class _TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
   double containerCategorySize = 100;
 
   bool isSameDate(DateTime? date1, DateTime? date2) {
@@ -20,6 +20,33 @@ class _TaskScreenState extends State<TaskScreen> {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Đăng ký observer để theo dõi trạng thái app
+    WidgetsBinding.instance.addObserver(this);
+    // Gọi fetch khi màn hình được khởi tạo
+    Future.microtask(() {
+      Provider.of<TaskCategoryViewmodel>(context, listen: false)
+          .fetchTasksByUserId();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Khi app được active lại, gọi refresh dữ liệu
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      Provider.of<TaskCategoryViewmodel>(context, listen: false)
+          .fetchTasksByUserId();
+    }
   }
 
   @override
@@ -100,33 +127,35 @@ class _TaskScreenState extends State<TaskScreen> {
               ],
             ),
           ),
-          Consumer<TaskCategoryViewmodel>(builder: (context, value, child) {
-            return AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              width: double.infinity,
-              height: containerCategorySize,
-              child: ListView.builder(
-                itemCount: value.taskCategories.length,
-                itemBuilder: (context, index) {
-                  final taskCategory = value.taskCategories[index];
-                  return ListTile(
-                    title: Text(taskCategory.name),
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) {
-                          return TaskCategoryBottomSheet(
-                              taskCategory: taskCategory);
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            );
-          }),
+          Consumer<TaskCategoryViewmodel>(
+            builder: (context, value, child) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: double.infinity,
+                height: containerCategorySize,
+                child: ListView.builder(
+                  itemCount: value.taskCategories.length,
+                  itemBuilder: (context, index) {
+                    final taskCategory = value.taskCategories[index];
+                    return ListTile(
+                      title: Text(taskCategory.name),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            return TaskCategoryBottomSheet(
+                                taskCategory: taskCategory);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

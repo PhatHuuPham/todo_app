@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/models/task_category.dart';
 import 'package:todo_app/viewmodel/task_category_viewmodel.dart';
 
@@ -15,6 +16,7 @@ class _CreateTaskCategoryScreenState extends State<CreateTaskCategoryScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -63,42 +65,58 @@ class _CreateTaskCategoryScreenState extends State<CreateTaskCategoryScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final TaskCategory newCategory = TaskCategory(
-                            id: 0, // ID sẽ được tạo tự động bởi database
-                            name: nameController.text,
-                            description: descriptionController.text,
-                          );
-
-                          try {
-                            await viewModel.createTaskCategory(newCategory);
-                            // Hiển thị thông báo thành công
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Category created successfully'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          } catch (e) {
-                            // Hiển thị thông báo lỗi
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Error creating category: ${e.toString()}'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text('Create Category'),
-                      ),
-                    ),
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            onPressed: () async {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              if (_formKey.currentState!.validate()) {
+                                try {
+                                  await viewModel
+                                      .createTaskCategory(TaskCategory(
+                                    id: 0, // ID sẽ được tạo tự động bởi database
+                                    name: nameController.text,
+                                    description: descriptionController.text,
+                                    userId: prefs.getInt('userId'),
+                                  ));
+                                  // Hiển thị thông báo thành công
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Category created successfully'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                  Navigator.pop(context);
+                                } catch (e) {
+                                  // Hiển thị thông báo lỗi
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Error creating category: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                } finally {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                }
+                              } else {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: Text('Create Category'),
+                            ),
+                          ),
                   ],
                 ),
               ),

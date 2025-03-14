@@ -14,8 +14,8 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => TaskViewmodel()),
       ChangeNotifierProvider(create: (context) => TaskCategoryViewmodel()),
+      ChangeNotifierProvider(create: (context) => TaskViewmodel()),
       ChangeNotifierProvider(create: (context) => UserViewmodel()),
       ChangeNotifierProvider(create: (context) => AuthViewModel()),
       ChangeNotifierProvider(create: (context) => Shareprefrence()),

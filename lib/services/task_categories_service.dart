@@ -17,15 +17,15 @@ class TaskCategoriesService extends ChangeNotifier {
     }
   }
 
-  Future<TaskCategory> getTask(int id) async {
-    // Fetch data from API
-    final response = await http.get(Uri.parse('$baseUrl/task_categories/$id'));
-    if (response.statusCode == 200) {
-      return TaskCategory.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load task');
-    }
-  }
+  // Future<TaskCategory> getTask(int id) async {
+  //   // Fetch data from API
+  //   final response = await http.get(Uri.parse('$baseUrl/task_categories/$id'));
+  //   if (response.statusCode == 200) {
+  //     return TaskCategory.fromJson(json.decode(response.body));
+  //   } else {
+  //     throw Exception('Failed to load task');
+  //   }
+  // }
 
   Future<TaskCategory> createTask(TaskCategory taskCategory) async {
     final response = await http.post(
@@ -33,14 +33,30 @@ class TaskCategoriesService extends ChangeNotifier {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(
-          {'name': taskCategory.name, 'description': taskCategory.description}),
+      body: jsonEncode({
+        'name': taskCategory.name,
+        'description': taskCategory.description,
+        if (taskCategory.userId != null)
+          'user_id': taskCategory.userId, // Thêm user_id nếu có
+      }),
     );
 
     if (response.statusCode == 201) {
       return TaskCategory.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to create task: ${response.body}');
+    }
+  }
+
+  Future<List<TaskCategory>> getTasksByUserId(int userId) async {
+    // Fetch data from API
+    final response =
+        await http.get(Uri.parse('$baseUrl/task_categories/user/$userId'));
+    if (response.statusCode == 200) {
+      final List<dynamic> taskJson = json.decode(response.body);
+      return taskJson.map((json) => TaskCategory.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load task category');
     }
   }
 
